@@ -157,7 +157,7 @@ Write your own dork queries with an interactive prompt. Built-in operator refere
 ### Step 1 — Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/gdork.git
+git clone https://github.com/miidhunraj/gdork.git
 cd gdork
 ```
 
@@ -173,22 +173,12 @@ Or install manually:
 pip install requests beautifulsoup4 rich
 ```
 
-### requirements.txt
-
-```
-requests>=2.28.0
-beautifulsoup4>=4.11.0
-rich>=13.0.0
-```
-
----
-
 ## 🚀 Usage
 
 ### Basic run
 
 ```bash
-python3 gdork.py
+python gdork.py
 ```
 
 ### First launch flow
@@ -254,10 +244,10 @@ Select dork category:
  │ 1 │ 📂  Exposed Files & Directories  │  15   │
  │ 2 │ 🔑  Login Pages & Admin Panels   │  15   │
  │ 3 │ 📄  Sensitive Documents          │  10   │
- │ 4 │ ⚠️   Vulnerable Systems           │  15   │
+ │ 4 │ ⚠️   Vulnerable Systems          │  15   │
  │ 5 │ 🌐  Network Devices & IoT        │  15   │
- │ 6 │ ☁️   Cloud & API Exposure         │  10   │
- │ 7 │ 🛠️   Custom Dork Builder          │   ∞   │
+ │ 6 │ ☁️   Cloud & API Exposure        │  10   │
+ │ 7 │ 🛠️   Custom Dork Builder         │   ∞   │
  └───┴──────────────────────────────────┴───────┘
 
 ▶ Starting scan — 15 dork(s) · delay=3.0s · 5 results each
@@ -347,11 +337,11 @@ Snippet: Parent Directory  -  database.sql  config.bak
 
 ```
 gdork/
-├── gdork.py              ← Main tool
-├── gdork_reference.html  ← Interactive dork reference (open in browser)
-├── requirements.txt      ← Python dependencies
-├── README.md             ← This file
-└── results/              ← Scan output directory (auto-created)
+├── gdork.py             
+├── gdork_reference.html  
+├── requirements.txt      
+├── README.md             
+└── results/             
     ├── gdork_results_*.json
     └── gdork_results_*.txt
 ```
@@ -374,7 +364,7 @@ Contributions are welcome! Here are some ways to improve GDork:
 
 ```bash
 # Fork the repo
-git clone https://github.com/yourusername/gdork.git
+git clone https://github.com/miidhunraj/gdork.git
 cd gdork
 
 # Create a feature branch
