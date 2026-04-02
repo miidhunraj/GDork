@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GDork — Google Dork Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080c10;--surface:#0e1520;--surface2:#141d2b;--border:#1e2d40;
+  --red:#ff3c3c;--orange:#ff8c00;--green:#00ff87;--cyan:#00d4ff;--dim:#4a6070;
+  --text:#c8dde8;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;overflow-x:hidden}
+
+/* scanline effect */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);pointer-events:none;z-index:999}
+
+.wrap{max-width:1100px;margin:0 auto;padding:32px 20px 80px}
+
+/* header */
+.header{text-align:center;margin-bottom:48px;position:relative}
+.ascii{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,8vw,80px);letter-spacing:.08em;color:var(--red);line-height:1;text-shadow:0 0 40px rgba(255,60,60,.4);margin-bottom:8px}
+.subtitle{color:var(--dim);font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+.version-tag{display:inline-block;background:rgba(255,60,60,.1);border:1px solid rgba(255,60,60,.3);color:var(--red);font-size:10px;padding:2px 10px;border-radius:3px;margin-top:8px;letter-spacing:.1em}
+
+/* setup box */
+.setup{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:24px;margin-bottom:32px;position:relative;overflow:hidden}
+.setup::before{content:'SETUP';position:absolute;top:16px;right:20px;font-size:10px;letter-spacing:.15em;color:var(--dim)}
+.setup h2{font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--cyan);letter-spacing:.05em;margin-bottom:16px}
+.cmd{background:#050810;border:1px solid var(--border);border-radius:6px;padding:12px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--green);margin:8px 0;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
+.cmd:hover{border-color:var(--green)}
+.cmd .prompt{color:var(--dim);user-select:none}
+.cmd .code{flex:1}
+.cmd .copy-btn{font-size:10px;color:var(--dim);border:1px solid var(--border);padding:2px 8px;border-radius:3px;cursor:pointer;transition:color .15s,border-color .15s}
+.cmd:hover .copy-btn{color:var(--green);border-color:var(--green)}
+
+/* operators */
+.ops-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;margin-bottom:32px}
+.op-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px}
+.op-name{color:var(--orange);font-weight:700;font-size:14px;margin-bottom:4px}
+.op-desc{color:var(--dim);font-size:11px;margin-bottom:8px}
+.op-example{background:#050810;border-radius:4px;padding:6px 10px;font-size:12px;color:var(--cyan)}
+
+/* categories */
+.cat-section{margin-bottom:28px}
+.cat-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+.cat-icon{font-size:18px}
+.cat-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.05em}
+.cat-count{font-size:11px;color:var(--dim);margin-left:auto;letter-spacing:.05em}
+.cat-red .cat-name{color:var(--red)}
+.cat-yellow .cat-name{color:var(--orange)}
+.cat-purple .cat-name{color:#c084fc}
+.cat-cyan .cat-name{color:var(--cyan)}
+.cat-blue .cat-name{color:#60a5fa}
+.cat-green .cat-name{color:var(--green)}
+
+.dork-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:8px}
+.dork-card{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:12px 14px;cursor:pointer;transition:border-color .15s;position:relative}
+.dork-card:hover{border-color:var(--cyan)}
+.dork-desc{font-size:11px;color:var(--dim);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+.dork-query{font-size:12px;color:var(--green);word-break:break-all}
+.dork-run{position:absolute;top:10px;right:10px;font-size:10px;color:var(--dim);background:var(--surface);border:1px solid var(--border);padding:2px 8px;border-radius:3px;opacity:0;transition:opacity .15s}
+.dork-card:hover .dork-run{opacity:1;color:var(--cyan);border-color:var(--cyan)}
+
+/* tips */
+.tips{background:rgba(255,140,0,.05);border:1px solid rgba(255,140,0,.2);border-radius:8px;padding:20px;margin-bottom:32px}
+.tips h3{color:var(--orange);font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.05em;margin-bottom:12px}
+.tip{display:flex;gap:10px;margin-bottom:8px;font-size:12px}
+.tip-icon{color:var(--orange);flex-shrink:0}
+.tip-text{color:var(--dim)}
+
+/* toast */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--green);color:var(--green);padding:10px 20px;border-radius:6px;font-size:12px;z-index:1000;opacity:0;transform:translateY(10px);transition:opacity .3s,transform .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="ascii">GDORK</div>
+    <div class="subtitle">Google Dork Automation Tool — Reference Card</div>
+    <div class="version-tag">ETHICAL USE ONLY</div>
+  </div>
+
+  <!-- Setup -->
+  <div class="setup">
+    <h2>Quick Setup</h2>
+    <div class="cmd" onclick="copyCmd(this)">
+      <span class="prompt">$</span>
+      <span class="code">pip install requests beautifulsoup4 rich</span>
+      <span class="copy-btn">copy</span>
+    </div>
+    <div class="cmd" onclick="copyCmd(this)">
+      <span class="prompt">$</span>
+      <span class="code">python gdork.py</span>
+      <span class="copy-btn">copy</span>
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:var(--dim)">
+      Requires Python 3.8+ · Internet connection · Use behind a VPN for anonymity
+    </div>
+  </div>
+
+  <!-- Operators -->
+  <div style="margin-bottom:12px">
+    <span style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--cyan);letter-spacing:.05em">Google Dork Operators</span>
+  </div>
+  <div class="ops-grid" style="margin-bottom:32px">
+    <div class="op-card"><div class="op-name">site:</div><div class="op-desc">Restrict results to a domain</div><div class="op-example">site:example.com</div></div>
+    <div class="op-card"><div class="op-name">inurl:</div><div class="op-desc">URL must contain the term</div><div class="op-example">inurl:admin</div></div>
+    <div class="op-card"><div class="op-name">intitle:</div><div class="op-desc">Page title contains term</div><div class="op-example">intitle:"index of"</div></div>
+    <div class="op-card"><div class="op-name">filetype:</div><div class="op-desc">Filter by file extension</div><div class="op-example">filetype:sql</div></div>
+    <div class="op-card"><div class="op-name">intext:</div><div class="op-desc">Body text contains term</div><div class="op-example">intext:"DB_PASSWORD"</div></div>
+    <div class="op-card"><div class="op-name">cache:</div><div class="op-desc">Google's cached version</div><div class="op-example">cache:example.com</div></div>
+    <div class="op-card"><div class="op-name">"phrase"</div><div class="op-desc">Exact phrase match</div><div class="op-example">"index of /backup"</div></div>
+    <div class="op-card"><div class="op-name">-term</div><div class="op-desc">Exclude a term</div><div class="op-example">inurl:admin -inurl:https</div></div>
+    <div class="op-card"><div class="op-name">OR / |</div><div class="op-desc">Match either term</div><div class="op-example">inurl:admin OR inurl:login</div></div>
+    <div class="op-card"><div class="op-name">*</div><div class="op-desc">Wildcard any word</div><div class="op-example">"password * admin"</div></div>
+    <div class="op-card"><div class="op-name">inanchor:</div><div class="op-desc">Link anchor text</div><div class="op-example">inanchor:"login here"</div></div>
+    <div class="op-card"><div class="op-name">related:</div><div class="op-desc">Similar sites</div><div class="op-example">related:github.com</div></div>
+  </div>
+
+  <!-- Tips -->
+  <div class="tips">
+    <h3>Pro Tips</h3>
+    <div class="tip"><span class="tip-icon">▶</span><span class="tip-text">Combine operators for precision: <span style="color:var(--green)">site:target.com filetype:env "DB_PASSWORD"</span></span></div>
+    <div class="tip"><span class="tip-icon">▶</span><span class="tip-text">Use delay ≥ 3s to avoid Google rate-limiting (HTTP 429). Use a VPN to rotate IPs.</span></div>
+    <div class="tip"><span class="tip-icon">▶</span><span class="tip-text">Always get written permission before dorking a target organisation's domain.</span></div>
+    <div class="tip"><span class="tip-icon">▶</span><span class="tip-text">Combine with Shodan: dork Google for URLs, then use Shodan to probe services on those IPs.</span></div>
+    <div class="tip"><span class="tip-icon">▶</span><span class="tip-text">Results are indexed snapshots — always verify live before reporting as a vulnerability.</span></div>
+    <div class="tip"><span class="tip-icon">▶</span><span class="tip-text">The Exploit-DB Google Hacking Database (GHDB) has 7000+ community dorks to explore.</span></div>
+  </div>
+
+  <!-- Dork Categories -->
+  <div id="dork-sections"></div>
+
+</div>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+const DORKS = {
+  "Exposed Files & Directories": {
+    color:"red",icon:"📂",
+    dorks:[
+      ['intitle:"index of" "parent directory"',"Open directory listing"],
+      ['intitle:"index of" passwd',"Exposed passwd files"],
+      ['intitle:"index of" ".git"',"Exposed .git directories"],
+      ['filetype:env "DB_PASSWORD"',"Exposed .env files"],
+      ['filetype:sql "INSERT INTO"',"Exposed SQL dumps"],
+      ['filetype:log "error" inurl:log',"Exposed log files"],
+      ['filetype:pem "PRIVATE KEY"',"Exposed private keys"],
+      ['intitle:"index of" "id_rsa"',"SSH private keys in open dirs"],
+      ['filetype:yml "password:" OR "secret:"',"Secrets in YAML files"],
+      ['intitle:"index of" ".aws"',"AWS credential directories"],
+      ['filetype:bak inurl:backup',"Backup files exposed"],
+      ['filetype:conf inurl:nginx OR inurl:apache',"Server config files"],
+      ['filetype:xml "connectionString"',"DB connection strings in XML"],
+      ['filetype:txt "password"',"Passwords in text files"],
+      ['filetype:ini "password"',"Passwords in INI files"],
+    ]
+  },
+  "Login Pages & Admin Panels": {
+    color:"yellow",icon:"🔑",
+    dorks:[
+      ['inurl:admin intitle:login',"Generic admin login page"],
+      ['inurl:wp-admin intitle:"WordPress"',"WordPress admin panel"],
+      ['inurl:phpmyadmin intitle:"phpMyAdmin"',"phpMyAdmin panel"],
+      ['inurl:"/admin/login"',"Admin login endpoint"],
+      ['intitle:"Plesk" inurl:login',"Plesk hosting panel"],
+      ['intitle:"cPanel" inurl:2083',"cPanel login"],
+      ['inurl:webmail intitle:login',"Webmail login panel"],
+      ['intitle:"Cisco" inurl:login.html',"Cisco device login"],
+      ['inurl:":8080/manager" intitle:"Tomcat"',"Apache Tomcat manager"],
+      ['inurl:"/panel" intitle:login',"Generic panel login"],
+      ['intitle:"Joomla" inurl:administrator',"Joomla admin panel"],
+      ['inurl:"/wp-login.php"',"WordPress login page"],
+    ]
+  },
+  "Sensitive Documents": {
+    color:"purple",icon:"📄",
+    dorks:[
+      ['filetype:pdf "confidential" site:.gov',"Confidential govt PDFs"],
+      ['filetype:xlsx "salary" OR "payroll"',"Salary spreadsheets"],
+      ['filetype:docx "internal use only"',"Internal use documents"],
+      ['filetype:csv "email" "password"',"CSV credential dumps"],
+      ['filetype:xls "username" "password"',"Excel credential files"],
+      ['filetype:pdf "api_key" OR "apikey"',"API keys in PDFs"],
+      ['filetype:doc "ssn" OR "social security"',"SSN documents"],
+      ['filetype:txt inurl:password',"Password text files"],
+    ]
+  },
+  "Vulnerable Systems": {
+    color:"red",icon:"⚠️",
+    dorks:[
+      ['intitle:"phpinfo()" "PHP Version"',"Exposed phpinfo()"],
+      ['intext:"Warning: mysql_connect()"',"MySQL connection errors"],
+      ['intext:"Fatal error" "on line" filetype:php',"PHP error disclosure"],
+      ['inurl:"/.svn/entries"',"Exposed SVN repos"],
+      ['intitle:"Welcome to IIS" inurl:iis',"Default IIS pages"],
+      ['inurl:"wp-content/uploads" filetype:php',"PHP shells in WP uploads"],
+      ['inurl:"actuator/env" intext:"propertySources"',"Spring Boot actuator leak"],
+      ['inurl:"/cgi-bin/" filetype:cgi',"Exposed CGI scripts"],
+      ['inurl:".php?id="',"Potential SQL injection (PHP)"],
+      ['intitle:"test page" inurl:test.php',"Test pages left online"],
+    ]
+  },
+  "Network Devices & IoT": {
+    color:"cyan",icon:"🌐",
+    dorks:[
+      ['inurl:"/viewer/live/index.html"',"IP camera streams"],
+      ['inurl:":8888" intitle:jupyter',"Exposed Jupyter notebooks"],
+      ['intitle:"Grafana" inurl:3000',"Exposed Grafana dashboards"],
+      ['intitle:"Kibana" inurl:5601',"Exposed Kibana"],
+      ['inurl:":8080" intitle:"Jenkins"',"Exposed Jenkins CI"],
+      ['inurl:":9200" intitle:elasticsearch',"Exposed Elasticsearch"],
+      ['intitle:"RabbitMQ" inurl:15672',"RabbitMQ management"],
+      ['inurl:":6379" intitle:"Redis"',"Exposed Redis instances"],
+      ['inurl:":5000" intitle:docker',"Exposed Docker registries"],
+      ['intitle:"Hadoop" inurl:50070',"Exposed Hadoop namenode"],
+    ]
+  },
+  "Cloud & API Exposure": {
+    color:"blue",icon:"☁️",
+    dorks:[
+      ['site:s3.amazonaws.com',"Public S3 buckets"],
+      ['site:blob.core.windows.net',"Public Azure blobs"],
+      ['site:storage.googleapis.com',"Public GCS buckets"],
+      ['inurl:pastebin.com "api_key"',"API keys on Pastebin"],
+      ['"AKIA" filetype:txt',"AWS access keys exposed"],
+      ['inurl:swagger.json OR inurl:swagger.yaml',"Exposed Swagger API docs"],
+      ['inurl:".json" "firebase.io" "rules"',"Firebase misconfig"],
+      ['site:trello.com "password"',"Sensitive Trello boards"],
+    ]
+  }
+};
+
+const colorMap = {
+  red:"#ff3c3c",yellow:"#ff8c00",purple:"#c084fc",cyan:"#00d4ff",blue:"#60a5fa",green:"#00ff87"
+};
+
+function buildSections(){
+  const container = document.getElementById('dork-sections');
+  Object.entries(DORKS).forEach(([name, cat])=>{
+    const sec = document.createElement('div');
+    sec.className = 'cat-section';
+    const color = colorMap[cat.color] || '#fff';
+    const grid = cat.dorks.map(([q,d])=>`
+      <div class="dork-card" onclick="runDork('${q.replace(/'/g,"\\'")}')">
+        <div class="dork-desc">${d}</div>
+        <div class="dork-query">${q}</div>
+        <div class="dork-run">Run on Google ↗</div>
+      </div>
+    `).join('');
+    sec.innerHTML = `
+      <div class="cat-header">
+        <span class="cat-icon">${cat.icon}</span>
+        <span class="cat-name" style="color:${color}">${name}</span>
+        <span class="cat-count">${cat.dorks.length} DORKS</span>
+      </div>
+      <div class="dork-grid">${grid}</div>
+    `;
+    container.appendChild(sec);
+  });
+}
+
+function runDork(dork){
+  const url = 'https://www.google.com/search?q='+encodeURIComponent(dork)+'&num=10';
+  window.open(url,'_blank');
+}
+
+function copyCmd(el){
+  const code = el.querySelector('.code').textContent;
+  navigator.clipboard.writeText(code).then(()=>showToast('Copied: '+code));
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2000);
+}
+
+// Click dork → copy to clipboard
+document.addEventListener('click', e=>{
+  const card = e.target.closest('.dork-card');
+  if(card && !e.target.classList.contains('dork-run')){
+    const q = card.querySelector('.dork-query').textContent;
+    navigator.clipboard.writeText(q).then(()=>showToast('Dork copied!'));
+  }
+});
+
+buildSections();
+</script>
+</body>
+</html>
